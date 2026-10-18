@@ -31,8 +31,7 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-        with:
-          accept-android-sdk-licenses: true
+
 
       - name: Accept Licenses & Prepare Environment
         run: |
