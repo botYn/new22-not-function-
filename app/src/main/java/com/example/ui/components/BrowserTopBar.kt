@@ -97,6 +97,7 @@ fun BrowserTopBar(
     onLayoutModeChanged: (ViewLayoutMode) -> Unit,
     onToggleSync: () -> Unit,
     onToggleAllMute: () -> Unit,
+    onLaunch10Accounts: () -> Unit,
     onLaunch25Accounts: () -> Unit,
     onLaunch36Accounts: () -> Unit,
     onBatchReloadAll: () -> Unit,
@@ -242,6 +243,7 @@ fun BrowserTopBar(
                             ViewLayoutMode.SPLIT_VERTICAL -> Icons.Default.ViewStream
                             ViewLayoutMode.GRID_4,
                             ViewLayoutMode.GRID_9,
+                            ViewLayoutMode.GRID_10,
                             ViewLayoutMode.GRID_16,
                             ViewLayoutMode.GRID_25,
                             ViewLayoutMode.GRID_36,
@@ -296,6 +298,14 @@ fun BrowserTopBar(
                             leadingIcon = { Icon(Icons.Default.ViewCompact, null) },
                             onClick = {
                                 onLayoutModeChanged(ViewLayoutMode.GRID_9)
+                                showLayoutMenu = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("🔥 十屏矩阵 (10开 4x3)", fontWeight = FontWeight.Bold, color = SoulGoldSecondary) },
+                            leadingIcon = { Icon(Icons.Default.Gamepad, null, tint = SoulGoldSecondary) },
+                            onClick = {
+                                onLayoutModeChanged(ViewLayoutMode.GRID_10)
                                 showLayoutMenu = false
                             }
                         )
@@ -356,6 +366,16 @@ fun BrowserTopBar(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
+                // 10-Accounts Quick Launcher (primary mode)
+                ToolChip(
+                    icon = Icons.Default.Gamepad,
+                    label = "🚀 一键10开同屏",
+                    highlightColor = SoulGoldSecondary,
+                    isActive = layoutMode == ViewLayoutMode.GRID_10,
+                    onClick = onLaunch10Accounts,
+                    testTag = "launch_10_accounts_btn"
+                )
+
                 // 25-Accounts Quick Launcher
                 ToolChip(
                     icon = Icons.Default.Gamepad,

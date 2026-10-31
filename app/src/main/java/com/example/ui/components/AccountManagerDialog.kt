@@ -122,7 +122,7 @@ fun AccountManagerDialog(
                         .padding(horizontal = 12.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    // Row 1: High-Density 25/36 One-Click Launchers
+                    // Row 1: 10-open primary launcher + 36-open
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -130,18 +130,18 @@ fun AccountManagerDialog(
                         Button(
                             onClick = {
                                 onDismiss()
-                                onLaunchBatchCount(25)
+                                onLaunchBatchCount(10)
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = SoulGoldSecondary),
                             shape = RoundedCornerShape(10.dp),
                             modifier = Modifier
                                 .weight(1.3f)
                                 .height(40.dp)
-                                .testTag("launch_25_matrix_btn")
+                                .testTag("launch_10_matrix_btn")
                         ) {
                             Icon(Icons.Default.Gamepad, null, modifier = Modifier.size(16.dp), tint = Color.White)
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("🔥 一键25开同屏 (5x5)", fontSize = 12.5.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                            Text("🔥 一键10开同屏 (4x3)", fontSize = 12.5.sp, fontWeight = FontWeight.Bold, color = Color.White)
                         }
 
                         Button(

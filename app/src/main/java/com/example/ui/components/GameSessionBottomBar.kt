@@ -172,6 +172,14 @@ fun GameSessionBottomBar(
                         testTag = "bottom_nav_mode_9"
                     )
                     LayoutModePill(
+                        label = "🔥10开",
+                        isSelected = layoutMode == ViewLayoutMode.GRID_10,
+                        icon = Icons.Default.Gamepad,
+                        accentColor = SoulGoldSecondary,
+                        onClick = { onLayoutModeChanged(ViewLayoutMode.GRID_10) },
+                        testTag = "bottom_nav_mode_10"
+                    )
+                    LayoutModePill(
                         label = "🔥25开",
                         isSelected = layoutMode == ViewLayoutMode.GRID_25,
                         icon = Icons.Default.Gamepad,

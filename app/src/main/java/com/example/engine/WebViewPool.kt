@@ -137,6 +137,25 @@ class WebViewPool(
         }
     }
 
+    /**
+     * A WebView instance is moved between Compose containers whenever the layout mode changes
+     * (single pane <-> grid cell). Chromium keeps the surface of the previous window, so the pane
+     * shows up blank until something forces a relayout/repaint. Nudging it fixes the white screen.
+     */
+    fun ensureAwake(webView: WebView) {
+        webView.post {
+            if (webView.width <= 0 || webView.height <= 0) return@post
+            try {
+                webView.onResume()
+                webView.resumeTimers()
+                webView.invalidate()
+                webView.requestLayout()
+            } catch (_: Exception) {
+                // WebView already destroyed or detached mid-flight — nothing to repaint.
+            }
+        }
+    }
+
     fun updateTabUserAgent(tabId: String, newUserAgent: String) {
         val webView = webViewMap[tabId] ?: return
         if (newUserAgent.isBlank()) {

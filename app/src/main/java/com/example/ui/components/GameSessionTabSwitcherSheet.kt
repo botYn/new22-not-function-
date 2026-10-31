@@ -212,7 +212,7 @@ fun GameSessionTabSwitcherSheet(
                     ) {
                         Icon(Icons.Default.GridView, null, modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(3.dp))
-                        Text("25开同屏", fontSize = 12.sp, fontWeight = FontWeight.Black)
+                        Text("10开同屏", fontSize = 12.sp, fontWeight = FontWeight.Black)
                     }
                 }
             }

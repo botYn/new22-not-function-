@@ -174,26 +174,24 @@ fun MultiWebViewContainer(
             // High-density multi-account matrix grids: 4-Grid, 9-Grid, 16-Grid, 25-Grid, 36-Grid, All-Grid
             ViewLayoutMode.GRID_4,
             ViewLayoutMode.GRID_9,
+            ViewLayoutMode.GRID_10,
             ViewLayoutMode.GRID_16,
             ViewLayoutMode.GRID_25,
             ViewLayoutMode.GRID_36,
             ViewLayoutMode.MATRIX_ALL -> {
                 val maxCount = layoutMode.maxVisible
                 val tabsToShow = gridTabIds.mapNotNull { tabMap[it] }.take(maxCount)
-                val columns = layoutMode.columns
+                // Clamp the column count to the panes actually shown; otherwise a 4-column grid
+                // holding one tab renders a single full-height vertical strip.
+                val columns = layoutMode.columns.coerceAtMost(tabsToShow.size.coerceAtLeast(1))
                 val isDenseMatrix = columns >= 4
 
                 BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-                    val availableWidth = maxWidth
                     val availableHeight = maxHeight
-                    val rows = (tabsToShow.size + columns - 1) / columns
-                    
-                    // Fixed-height tile or dynamic height so all rows fit neatly
-                    val itemHeight = if (rows > 0 && rows <= 6) {
-                        (availableHeight / rows).coerceAtLeast(100.dp)
-                    } else {
-                        160.dp
-                    }
+                    val rows = ((tabsToShow.size + columns - 1) / columns).coerceAtLeast(1)
+
+                    // Every row shares the available height so the whole matrix stays on one screen
+                    val itemHeight = (availableHeight / rows).coerceAtLeast(90.dp)
 
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(columns),
@@ -384,7 +382,11 @@ private fun SingleWebViewPane(
                 onReset = { view ->
                     (view.parent as? ViewGroup)?.removeView(view)
                 },
-                update = { _ -> },
+                update = { view ->
+                    // Re-attached after a layout switch: force Chromium to repaint, otherwise
+                    // the pane stays blank/white because the old surface is kept.
+                    (view as? android.webkit.WebView)?.let { webViewPool.ensureAwake(it) }
+                },
                 modifier = Modifier
                     .fillMaxSize()
                     .testTag("webview_pane_${tab.id}")

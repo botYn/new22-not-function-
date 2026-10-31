@@ -250,6 +250,7 @@ class BrowserViewModel(application: Application) : AndroidViewModel(application)
             ViewLayoutMode.SPLIT_VERTICAL, ViewLayoutMode.SPLIT_HORIZONTAL -> 2
             ViewLayoutMode.GRID_4 -> 4
             ViewLayoutMode.GRID_9 -> 9
+            ViewLayoutMode.GRID_10 -> 10
             ViewLayoutMode.GRID_16 -> 16
             ViewLayoutMode.GRID_25 -> 25
             ViewLayoutMode.GRID_36 -> 36
@@ -264,19 +265,20 @@ class BrowserViewModel(application: Application) : AndroidViewModel(application)
         _gridTabIds.value = selected
     }
 
-    // Launch Batch Accounts (25, 36, or custom number)
+    // Launch Batch Accounts (10 by default; 25 / 36 / custom still supported)
     fun launchBatchAccounts(
-        targetCount: Int = 25,
+        targetCount: Int = 10,
         url: String = "https://m.gm99.com/dldl",
         baseName: String = "斗罗号"
     ) {
-        val currentTabs = _tabs.value.toMutableList()
-        val neededNew = targetCount - currentTabs.size
+        val neededCount = targetCount.coerceIn(1, 100)
+        var currentTabs = _tabs.value.toMutableList()
 
-        if (neededNew > 0) {
-            val generated = (1..neededNew).map { idx ->
+        // 1) Grow up to the requested count
+        if (neededCount > currentTabs.size) {
+            val generated = (1..(neededCount - currentTabs.size)).map { idx ->
                 val totalNum = currentTabs.size + idx
-                val padNum = String.format("%02d", totalNum)
+                val padNum = String.format(java.util.Locale.US, "%02d", totalNum)
                 TabItem(
                     id = UUID.randomUUID().toString(),
                     title = "斗罗H5-$padNum",
@@ -288,20 +290,36 @@ class BrowserViewModel(application: Application) : AndroidViewModel(application)
             currentTabs.addAll(generated)
         }
 
-        _tabs.value = currentTabs.take(targetCount.coerceAtLeast(currentTabs.size))
-        _activeTabId.value = _tabs.value.first().id
+        // 2) Shrink if needed — release the dropped WebViews instead of leaking them
+        if (currentTabs.size > neededCount) {
+            currentTabs.drop(neededCount).forEach { dropped ->
+                webViewPool.releaseTab(dropped.id)
+            }
+            currentTabs = currentTabs.take(neededCount).toMutableList()
+        }
 
-        // Auto-switch to matching grid layout
+        _tabs.value = currentTabs.toList()
+        val stillActive = currentTabs.any { it.id == _activeTabId.value }
+        _activeTabId.value = if (stillActive) _activeTabId.value else currentTabs.first().id
+
+        // 3) Auto-switch to matching grid layout
         val targetMode = when {
-            targetCount <= 4 -> ViewLayoutMode.GRID_4
-            targetCount <= 9 -> ViewLayoutMode.GRID_9
-            targetCount <= 16 -> ViewLayoutMode.GRID_16
-            targetCount <= 25 -> ViewLayoutMode.GRID_25
-            targetCount <= 36 -> ViewLayoutMode.GRID_36
+            neededCount <= 1 -> ViewLayoutMode.SINGLE
+            neededCount <= 2 -> ViewLayoutMode.SPLIT_VERTICAL
+            neededCount <= 4 -> ViewLayoutMode.GRID_4
+            neededCount <= 9 -> ViewLayoutMode.GRID_9
+            neededCount <= 10 -> ViewLayoutMode.GRID_10
+            neededCount <= 16 -> ViewLayoutMode.GRID_16
+            neededCount <= 25 -> ViewLayoutMode.GRID_25
+            neededCount <= 36 -> ViewLayoutMode.GRID_36
             else -> ViewLayoutMode.MATRIX_ALL
         }
         _layoutMode.value = targetMode
         updateGridTabs()
+    }
+
+    fun launch10AccountsMatrix() {
+        launchBatchAccounts(targetCount = 10)
     }
 
     fun launch25AccountsMatrix() {

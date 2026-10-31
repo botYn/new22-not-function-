@@ -178,6 +178,7 @@ fun TabXMainScreen(
                     onLayoutModeChanged = { viewModel.setLayoutMode(it) },
                     onToggleSync = { viewModel.toggleGlobalSync() },
                     onToggleAllMute = { viewModel.toggleAllMute() },
+                    onLaunch10Accounts = { viewModel.launch10AccountsMatrix() },
                     onLaunch25Accounts = { viewModel.launch25AccountsMatrix() },
                     onLaunch36Accounts = { viewModel.launch36AccountsMatrix() },
                     onBatchReloadAll = { viewModel.batchReloadAll() },
@@ -216,6 +217,7 @@ fun TabXMainScreen(
                             tabs.size >= 36 -> ViewLayoutMode.GRID_36
                             tabs.size >= 25 -> ViewLayoutMode.GRID_25
                             tabs.size >= 16 -> ViewLayoutMode.GRID_16
+                            tabs.size >= 10 -> ViewLayoutMode.GRID_10
                             tabs.size >= 9 -> ViewLayoutMode.GRID_9
                             else -> ViewLayoutMode.GRID_4
                         }
@@ -333,7 +335,7 @@ fun TabXMainScreen(
                         viewModel.toggleTabMute(tabId)
                     },
                     onAddNewSession = { viewModel.addNewTab() },
-                    onLaunch25Matrix = { viewModel.launch25AccountsMatrix() },
+                    onLaunch25Matrix = { viewModel.launch10AccountsMatrix() },
                     onBatchReloadAll = { viewModel.batchReloadAll() }
                 )
             }

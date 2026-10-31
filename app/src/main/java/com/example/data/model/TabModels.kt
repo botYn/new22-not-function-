@@ -26,6 +26,8 @@ enum class ViewLayoutMode(val label: String, val maxVisible: Int, val columns: I
     SPLIT_HORIZONTAL("双屏左右 (2开)", 2, 2),
     GRID_4("四屏矩阵 (4开 2x2)", 4, 2),
     GRID_9("九屏矩阵 (9开 3x3)", 9, 3),
+    // 10 开主力模式：4 列 x 3 行，单格长宽比最接近横屏 H5 画布，10 个号刚好占满
+    GRID_10("十屏矩阵 (10开 4x3)", 10, 4),
     GRID_16("十六屏矩阵 (16开 4x4)", 16, 4),
     GRID_25("二十五屏千军矩阵 (25开 5x5)", 25, 5),
     GRID_36("三十六屏阵列 (36开 6x6)", 36, 6),
